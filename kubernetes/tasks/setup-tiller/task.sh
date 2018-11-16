@@ -25,4 +25,4 @@ subjects:
     namespace: kube-system
 EOF
 
-kubectl create -f rbac-config.yaml
+kubectl apply -f rbac-config.yaml

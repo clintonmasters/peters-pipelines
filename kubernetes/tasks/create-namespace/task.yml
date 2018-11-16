@@ -7,6 +7,7 @@ image_resource:
   source:
     repository: harbor.pks.pcf.cloud.oskoss.com/library/oskoss/pks
     insecure_registries: ["harbor.pks.pcf.cloud.oskoss.com"]
+    
 
 params:
   K8S_NAMESPACE:

@@ -4,7 +4,7 @@ set -xu
 
 cp kube-config/config ~/.kube/config
 
-kubectl create -f pks-prometheus/loadBalancer.yml -n $K8S_NAMESPACE
+kubectl apply -f pks-prometheus/loadBalancer.yml -n $K8S_NAMESPACE
 
 kubectl get services -n $K8S_NAMESPACE
 
