@@ -7,7 +7,7 @@ image_resource:
   source:
     repository: harbor.homeoffice.wal-mart.com/library/oskoss/pks     
     insecure_registries: ["harbor.homeoffice.wal-mart.com"]
-
+    
 inputs:
   - name: peters-pipelines
   - name: kube-config
