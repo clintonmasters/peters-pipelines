@@ -2,11 +2,11 @@
 
 Pipelines to manage PKS.  
 
-Initial release is a pipeline to create PKS clusters.
+1) A pipeline to create PKS clusters.
 
 ## Create Cluster
 
-Uses this image: [oskoss/pks](https://hub.docker.com/r/oskoss/pks/)
+Uses this image: [harbor.homeoffice.wal-mart.com/library/oskoss/pks](https://hub.docker.com/r/harbor.homeoffice.wal-mart.com/library/oskoss/pks/)
 
 Uses these parameters:
 

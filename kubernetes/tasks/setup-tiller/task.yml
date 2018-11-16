@@ -5,9 +5,9 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: harbor.pks.pcf.cloud.oskoss.com/library/oskoss/pks
-    insecure_registries: ["harbor.pks.pcf.cloud.oskoss.com"]
-
+    repository: harbor.homeoffice.wal-mart.com/library/oskoss/pks     
+    insecure_registries: ["harbor.homeoffice.wal-mart.com"]
+    
 inputs:
   - name: peters-pipelines
   - name: kube-config

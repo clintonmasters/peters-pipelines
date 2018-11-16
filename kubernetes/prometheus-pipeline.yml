@@ -7,7 +7,7 @@ resources:
 - name: pks-prometheus
   type: git
   source:
-    uri: git@github.com:Oskoss/pks-prometheus.git
+    uri: git@github.com:harbor.homeoffice.wal-mart.com/library/oskoss/pks-prometheus.git
     private_key: {{github_private_key}}
 
 jobs:

@@ -5,7 +5,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: oskoss/pks
+    repository: harbor.homeoffice.wal-mart.com/library/oskoss/pks     
+    insecure_registries: ["harbor.homeoffice.wal-mart.com"]
 
 params:
   PKS_API_URL:
