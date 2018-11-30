@@ -45,7 +45,7 @@ iaas_configuration=$(
       "nsx_username": $nsx_username,
       "nsx_password": $nsx_password,
       "nsx_ca_certificate": $nsx_ca_certificate,
-      "nsx_mode": nsx-t
+      "nsx_mode": "nsx-t"
     }
   else
     .
