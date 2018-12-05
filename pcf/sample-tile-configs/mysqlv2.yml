@@ -5,16 +5,6 @@ product-properties:
     value: false
   .properties.backups_selector:
     value: SCP Backups
-  .properties.backups_selector.scp.port:
-    value: 123
-  .properties.backups_selector.scp.server:
-    value: fake
-  .properties.backups_selector.scp.user:
-    value: fake
-  .properties.backups_selector.scp.key:
-    value: fake
-  .properties.backups_selector.scp.destination:
-    value: fake
   .properties.canary_instances:
     value: 0
   .properties.enable_lower_case_table_names:
