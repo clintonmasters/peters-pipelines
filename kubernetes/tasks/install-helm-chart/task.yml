@@ -1,0 +1,20 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: oskoss/pks
+
+params:
+  CHART_NAME:
+  CHART_VALUES:
+  K8S_NAMESPACE:
+
+inputs:
+  - name: peters-pipelines
+  - name: kube-config
+
+run:
+  path: peters-pipelines/kubernetes/tasks/install-helm-chart/task.sh
