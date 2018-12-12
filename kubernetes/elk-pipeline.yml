@@ -2,7 +2,7 @@ resources:
 - name: peters-pipelines
   type: git
   source:
-    uri: git@github.com:Oskoss/peters-pipelines.git
+    uri: git@github.com:clintonmasters/peters-pipelines.git
     private_key: {{github_private_key}}
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     params:
       K8S_NAMESPACE: elk
       CHART_NAME: elastic-stack
-      CART_VALUES:
+      CHART_VALUES: 
       
  
   
