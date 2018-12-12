@@ -1,0 +1,31 @@
+resources:
+- name: peters-pipelines
+  type: git
+  source:
+    uri: git@github.com:Oskoss/peters-pipelines.git
+    private_key: {{github_private_key}}
+
+jobs:
+- name: setup-elastic
+  plan:
+  - get: peters-pipelines
+  - task: authenticate-kubernetes
+    file: peters-pipelines/kubernetes/tasks/authenticate-kubernetes/task.yml
+    params:
+      PKS_API_URL: {{pks_api_url}}
+      PKS_API_USERNAME: {{pks_api_username}}
+      PKS_API_PASSWORD: {{pks_api_password}}
+      PKS_CLUSTER_NAME: {{pks_cluster_name}}    
+  - task: create-namespace
+    file: peters-pipelines/kubernetes/tasks/create-namespace/task.yml
+    params:
+      K8S_NAMESPACE: elk
+  - task: helm-chart
+    file: peters-pipelines/kubernetes/tasks/install-helm-chart/task.yml
+    params:
+      K8S_NAMESPACE: elk
+      CHART_NAME: elastic-stack
+      CART_VALUES:
+      
+ 
+  
