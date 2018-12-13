@@ -12,6 +12,8 @@ echo $CHART_VALUES > values.yml
 
 kubectl config set-context $(kubectl config current-context) --namespace=$K8S_NAMESPACE
 
+helm init --client-only
+
 helm install --name $K8S_NAMESPACE -f values.yml stable/$CHART_NAME
 
 
