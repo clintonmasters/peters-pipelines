@@ -17,8 +17,8 @@ function generate_cert () (
       --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
       --client-id "${OPSMAN_CLIENT_ID}" \
       --client-secret "${OPSMAN_CLIENT_SECRET}" \
-      --username "$OPS_MGR_USR" \
-      --password "$OPS_MGR_PWD" \
+      --username "$OPSMAN_USERNAME" \
+      --password "$OPSMAN_PASSWORD" \
       --skip-ssl-validation \
       curl \
       --silent \
@@ -102,6 +102,8 @@ else
     nsx_pi_certificate=""
 
 fi
+
+## TODO: Add logic that sets ssl_verification to false if nsx_ca_certificate is not set.  They don't work together
 
 
 cf_properties=$(
@@ -426,8 +428,8 @@ cf_resources=$(
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username "$OPS_MGR_USR" \
-  --password "$OPS_MGR_PWD" \
+  --username "$OPSMAN_USERNAME" \
+  --password "$OPSMAN_PASSWORD" \
   --skip-ssl-validation \
   configure-product \
   --product-name pivotal-container-service \

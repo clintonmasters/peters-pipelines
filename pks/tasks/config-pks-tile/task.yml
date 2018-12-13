@@ -8,8 +8,8 @@ image_resource:
     repository: pcfnorm/rootfs
 
 params: 
-  OPS_MGR_USR:
-  OPS_MGR_PWD:
+  OPSMAN_USERNAME:
+  OPSMAN_PASSWORD:
   OPSMAN_CLIENT_ID:
   OPSMAN_CLIENT_SECRET:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
