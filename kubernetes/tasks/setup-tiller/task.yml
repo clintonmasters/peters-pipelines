@@ -5,7 +5,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: oskoss/pks
+    repository: gcr.io/kubernetes-helm/tiller
 
 inputs:
   - name: peters-pipelines

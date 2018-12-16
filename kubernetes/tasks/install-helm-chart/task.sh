@@ -8,12 +8,17 @@ set -xu
 
 cp kube-config/config ~/.kube/config
 
-echo $CHART_VALUES > values.yml
-
-kubectl config set-context $(kubectl config current-context) --namespace=$K8S_NAMESPACE
-
 helm init --client-only
 
-helm install --name $K8S_NAMESPACE -f values.yml stable/$CHART_NAME
+HELM_OPTIONS="stable/$CHART_NAME"
+
+# Set chart values from file if CHART_VALUES exists
+FILE=${CHART_VALUES:-novalues}
+if [[ "$FILE" != "novalues" ]]; then
+  HELM_OPTIONS="-f \"$CHART_VALUES\" stable/$CHART_NAME"
+fi
+
+# Install the Chart
+helm upgrade --install --name $RELEASE_NAME $HELM_OPTIONS
 
 
