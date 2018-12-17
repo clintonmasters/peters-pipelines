@@ -4,7 +4,11 @@ resources:
   source:
     uri: git@github.com:Oskoss/peters-pipelines.git
     private_key: {{github_private_key}}
-
+- name: helm-values
+  type: git
+  source:
+    uri: git@github.com:Oskoss/pks-helm-values.git
+    private_key: {{github_private_key}}
 jobs:
 - name: setup-elastic
   plan:
@@ -16,16 +20,17 @@ jobs:
       PKS_API_USERNAME: {{pks_api_username}}
       PKS_API_PASSWORD: {{pks_api_password}}
       PKS_CLUSTER_NAME: {{pks_cluster_name}}    
-  - task: create-namespace
-    file: peters-pipelines/kubernetes/tasks/create-namespace/task.yml
-    params:
-      K8S_NAMESPACE: elk
+#  - task: create-namespace
+#    file: peters-pipelines/kubernetes/tasks/create-namespace/task.yml
+#    params:
+#      K8S_NAMESPACE: elk
+  - get: helm-values
   - task: helm-chart
     file: peters-pipelines/kubernetes/tasks/install-helm-chart/task.yml
     params:
-      K8S_NAMESPACE: elk
+      RELEASE_NAME: elastic-stack
       CHART_NAME: elastic-stack
-      CHART_VALUES:
+      CHART_VALUES: helm-values/elastic-stack/values.yml
       
  
   
