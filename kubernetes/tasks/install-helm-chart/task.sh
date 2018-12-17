@@ -22,10 +22,10 @@ FILE=${CHART_VALUES:-novalues}
 if [[ "$FILE" == "novalues" ]]; then
   HELM_OPTIONS=""
 else
-  HELM_OPTIONS="--values \"$PWD/$CHART_VALUES\""
+  HELM_OPTIONS="--values $PWD/$CHART_VALUES"
 fi
 
 # Install the Chart
-helm upgrade $RELEASE_NAME stable/$CHART_NAME --install $HELM_OPTIONS
+helm upgrade $RELEASE_NAME stable/$CHART_NAME --install $HELM_OPTIONS --debug 
 
 
