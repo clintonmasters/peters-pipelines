@@ -18,4 +18,6 @@ inputs:
   - name: helm-values
 
 run:
-  path: peters-pipelines/kubernetes/tasks/install-helm-chart/task.sh
+  path: /bin/sh
+  args:
+    - peters-pipelines/kubernetes/tasks/install-helm-chart/task.sh
