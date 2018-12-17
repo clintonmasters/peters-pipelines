@@ -6,7 +6,7 @@ image_resource:
   type: docker-image
   source:
     repository: gcr.io/kubernetes-helm/tiller
-    tag: canary
+    tag: v2.12
 
 params:
   RELEASE_NAME:
