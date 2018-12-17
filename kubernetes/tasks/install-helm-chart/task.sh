@@ -6,6 +6,11 @@
 
 set -xu
 
+# helm and tiller are in / in the image
+if [[ -x /helm ]]; then
+  export PATH=/:$PATH
+fi
+
 cp kube-config/config ~/.kube/config
 
 helm init --client-only
