@@ -2,6 +2,7 @@
 
 set -xu
 
+mkdir -m 700 -p ~/.kube
 cp kube-config/config ~/.kube/config
 
 cat << EOF > rbac-config.yaml
@@ -26,5 +27,10 @@ subjects:
 EOF
 
 kubectl create -f rbac-config.yaml
+
+# helm and tiller are in / in the offical image
+if [[ -x /helm ]]; then
+  export PATH=/:$PATH
+fi
 
 helm init --service-account tiller
