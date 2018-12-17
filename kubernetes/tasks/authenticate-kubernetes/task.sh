@@ -14,3 +14,5 @@ sed -i "s/server: .*$/server: https:\/\/"$k8s_master_ip":8443/" ~/.kube/config
 kubectl cluster-info
 
 cp ~/.kube/config kube-config/config
+
+chmod 644 kube-config/config
