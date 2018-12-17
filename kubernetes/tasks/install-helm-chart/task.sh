@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #params:
 #  CHART_NAME:
 #  CHART_VALUES:
@@ -6,14 +6,26 @@
 
 set -xu
 
+# helm and tiller are in / in the image
+if [[ -x /helm ]]; then
+  export PATH=/:$PATH
+fi
+
+mkdir -m 700 -p ~/.kube
 cp kube-config/config ~/.kube/config
-
-echo $CHART_VALUES > values.yml
-
-kubectl config set-context $(kubectl config current-context) --namespace=$K8S_NAMESPACE
 
 helm init --client-only
 
-helm install --name $K8S_NAMESPACE -f values.yml stable/$CHART_NAME
+# Set chart values from file if CHART_VALUES exists
+FILE=${CHART_VALUES:-novalues}
+
+if [[ "$FILE" == "novalues" ]]; then
+  HELM_OPTIONS=""
+else
+  HELM_OPTIONS="--values $PWD/$CHART_VALUES"
+fi
+
+# Install the Chart
+helm upgrade $RELEASE_NAME stable/$CHART_NAME --install $HELM_OPTIONS --debug 
 
 
