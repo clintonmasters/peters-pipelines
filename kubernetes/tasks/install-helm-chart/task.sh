@@ -24,6 +24,6 @@ if [[ "$FILE" != "novalues" ]]; then
 fi
 
 # Install the Chart
-helm upgrade --install --name $RELEASE_NAME $HELM_OPTIONS
+helm upgrade $RELEASE_NAME $CHART_NAME --install --values $HELM_OPTIONS
 
 
