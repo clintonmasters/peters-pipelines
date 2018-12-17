@@ -14,17 +14,18 @@ fi
 mkdir -m 700 -p ~/.kube
 cp kube-config/config ~/.kube/config
 
-helm init --client-only
-
-HELM_OPTIONS="stable/$CHART_NAME"
+echo helm init --client-only
 
 # Set chart values from file if CHART_VALUES exists
 FILE=${CHART_VALUES:-novalues}
-if [[ "$FILE" != "novalues" ]]; then
-  HELM_OPTIONS="-f \"$CHART_VALUES\" stable/$CHART_NAME"
+
+if [[ "$FILE" == "novalues" ]]; then
+  HELM_OPTIONS=""
+else
+  HELM_OPTIONS="--values \"$CHART_VALUES\""
 fi
 
 # Install the Chart
-helm upgrade $RELEASE_NAME $CHART_NAME --install --values $HELM_OPTIONS
+echo helm upgrade $RELEASE_NAME stable/$CHART_NAME --install $HELM_OPTIONS
 
 
