@@ -11,6 +11,7 @@ if [[ -x /helm ]]; then
   export PATH=/:$PATH
 fi
 
+mkdir -m 700 -p ~/.kube
 cp kube-config/config ~/.kube/config
 
 helm init --client-only
