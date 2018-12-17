@@ -5,7 +5,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: gcr.io/kubernetes-helm/tiller:v2.12
+    repository: gcr.io/kubernetes-helm/tiller:canary
 
 params:
   RELEASE_NAME:

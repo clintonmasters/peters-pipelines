@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #params:
 #  CHART_NAME:
 #  CHART_VALUES:
