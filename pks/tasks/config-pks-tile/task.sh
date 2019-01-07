@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Deploy PKS on vsphere
 
-
 set -euo pipefail
+set -x
 
 declare ssl_certs_json
 
@@ -85,15 +85,14 @@ else
     networking_poe_ssl_certs_json="[$networking_poe_ssl_certs_json]"
 fi
 
-# NSX-T cert for the SI
+# Process Networking seperately since NSX-T section is long.
 
-if "$NSX_NETWORKING_ENABLED" then
+if [[ "$NSX_NETWORKING_ENABLED" ]]; then
 
     nsx_pi_certificate="[
     {
         \"cert_pem\": $NSX_PI_CERT,
         \"private_key_pem\": $NSX_PI_KEY
-      }
     }
   ]"
 
@@ -113,12 +112,12 @@ cf_properties=$(
     --arg vcenter_password "$VCENTER_PWD" \
     --arg datacenter "$VCENTER_DATA_CENTER" \
     --arg cluster "$AZ_1_CLUSTER_NAME" \
+    --arg pks_api_hostname "$PKS_API" \
+    --arg pks_storage_name "$PKS_STORAGE_NAME" \
     --arg nsx_address "$NSX_ADDRESS" \
     --arg nsx_username "$NSX_USERNAME" \
     --arg nsx_password "$NSX_PASSWORD" \
     --arg nsx_ca_certificate "$NSX_CA_CERTIFICATE" \
-    --arg pks_api_hostname "$PKS_API" \
-    --arg pks_storage_name "$PKS_STORAGE_NAME" \
     --arg nsx-nodes-ip-block-id "$NSX_NODES_IP_BLOCK_ID" \
     --arg nsx-ip-block-id "$NSX_IP_BLOCK_ID" \
     --arg nsx-floating-ip-pool-ids "$NSX_FLOATING_IP_POOL_ID" \
@@ -127,7 +126,6 @@ cf_properties=$(
     --arg pks_vms "$PKS_VMS"
     --arg availability_zones "$NW_AZS" \
     --arg container_networking_nw_cidr "$CONTAINER_NETWORKING_NW_CIDR" \
-    --argjson credhub_encryption_keys "$credhub_encryption_keys_json" \
     --argjson nsx-t-superuser-certificate "$nsx_pi_certificate" \
     --argjon pks_api_ssl_certs: "$pks_api_ssl_certs" \
     '
@@ -146,16 +144,20 @@ cf_properties=$(
         }, 
         ".properties.network_selector.nsx.vcenter_cluster": {
             "value": $cluster
-        }, 
-        ".properties.network_selector": {
-            "value": "nsx"
-        }, 
+        },      
         ".properties.cloud_provider.vsphere.vcenter_master_creds": {
             "value": {
                 "password": $vcenter_password, 
                 "identity": $vcenter_username
             }
-        },         
+        },     
+    }
+    +
+    if $nsx_ca_certificate != ""  then 
+    { 
+        ".properties.network_selector": {
+            "value": "nsx"
+        },     
         ".properties.network_selector.nsx.network_automation": {
             "value": true
         }, 
@@ -185,12 +187,83 @@ cf_properties=$(
         },
         ".properties.network_selector.nsx.floating-ip-pool-ids": {
             "value": $nsx-floating-ip-pool-ids
+        },
+        ".properties.network_selector.nsx.lb_size_medium_supported": {
+            "value": true
         }, 
+           ".properties.network_selector.nsx.lb_size_large_supported": {
+            "value": false
+        }, 
+    }
+    else
+    {
+        ".properties.network_selector": {
+            "value": "flannel"
+        },    
+    } 
+    end
+    +
+    {  
+        ".properties.worker_max_in_flight": {
+            "value": 1
+        }, 
+        ".properties.uaa_oidc": {
+            "value": false
+        }, 
+        ".properties.sink_resources": {
+            "value": true
+        },   
         ".properties.pks_api_hostname": {
             "value": $pks_api_hostname
         },
         ".properties.cloud_provider.vsphere.vcenter_vms": {
             "value": $pks_vms
+        }, 
+        ".properties.telemetry_selector.enabled.interval": {
+            "value": 600
+        }, 
+        ".properties.syslog_migration_selector.enabled.transport_protocol": {
+            "value": "tcp"
+        }, 
+        ".properties.proxy_selector.enabled.https_proxy_credentials": {
+            "value": {
+                "password": "***"
+            }
+        }, 
+        ".properties.telemetry_selector.enabled.telemetry_url": {
+            "value": "https://vcsa.vmware.com"
+        }, 
+        ".properties.pks-vrli": {
+            "value": "disabled"
+        }, 
+        ".properties.proxy_selector": {
+            "value": "Disabled"
+        }, 
+        ".properties.uaa.ldap.external_groups_whitelist": {
+            "value": "*"
+        }, 
+        ".properties.proxy_selector.enabled.http_proxy_credentials": {
+            "value": {
+                "password": "***"
+            }
+        }, 
+        ".properties.uaa.ldap.ldap_referrals": {
+            "value": "follow"
+        }, 
+        ".properties.telemetry_selector": {
+            "value": "disabled"
+        }, 
+         ".properties.syslog_migration_selector": {
+            "value": "disabled"
+        }, 
+        ".properties.pks-vrli.enabled.skip_cert_verify": {
+            "value": false
+        }, 
+        ".properties.cloud_provider.vsphere.vcenter_ds": {
+            "value": $pks_storage_name
+        }, 
+        ".properties.wavefront": {
+            "value": "disabled"
         }, 
         ".properties.plan2_selector.active.allow_privileged_containers": {
             "value": true
@@ -200,24 +273,12 @@ cf_properties=$(
         }, 
         ".properties.plan3_selector.active.errand_vm_type": {
             "value": "micro"
-        }, 
-        ".properties.telemetry_selector.enabled.interval": {
-            "value": 600
-        },      
+        },  
         ".properties.plan1_selector.active.master_instances": {
             "value": 1
         }, 
         ".properties.plan3_selector.active.disable_deny_escalating_exec": {
             "value": false
-        }, 
-        ".properties.worker_max_in_flight": {
-            "value": 1
-        }, 
-        ".properties.uaa_oidc": {
-            "value": false
-        }, 
-        ".properties.sink_resources": {
-            "value": true
         }, 
         ".properties.plan1_selector.active.worker_az_placement": {
             "value": ($availability_zones | split(","))
@@ -240,9 +301,6 @@ cf_properties=$(
         ".properties.plan1_selector.active.disable_deny_escalating_exec": {
             "value": false
         }, 
-        ".properties.syslog_migration_selector.enabled.transport_protocol": {
-            "value": "tcp"
-        }, 
         ".properties.plan2_selector": {
             "value": "Plan Active"
         }, 
@@ -264,32 +322,11 @@ cf_properties=$(
         ".properties.plan2_selector.active.master_vm_type": {
             "value": "medium"
         }, 
-        ".properties.network_selector.nsx.lb_size_large_supported": {
-            "value": false
-        }, 
         ".properties.plan1_selector.active.name": {
             "value": "small"
         }, 
-        ".properties.pks-vrli": {
-            "value": "disabled"
-        }, 
         ".properties.plan1_selector.active.master_persistent_disk_type": {
             "value": "10240"
-        }, 
-        ".properties.proxy_selector.enabled.https_proxy_credentials": {
-            "value": {
-                "password": "***"
-            }
-        }, 
-        ".properties.telemetry_selector.enabled.telemetry_url": {
-            "value": "https://vcsa.vmware.com"
-        }, 
-      
-        ".properties.proxy_selector": {
-            "value": "Disabled"
-        }, 
-        ".properties.uaa.ldap.external_groups_whitelist": {
-            "value": "*"
         }, 
         ".properties.plan3_selector.active.master_vm_type": {
             "value": "medium.disk"
@@ -309,29 +346,15 @@ cf_properties=$(
         ".properties.plan1_selector.active.errand_vm_type": {
             "value": "micro"
         }, 
-        ".properties.network_selector.nsx.lb_size_medium_supported": {
-            "value": true
-        }, 
         ".properties.plan3_selector.active.description": {
             "value": "plan3"
         }, 
         ".properties.plan2_selector.active.worker_instances": {
             "value": 3
         }, 
-        ".properties.proxy_selector.enabled.http_proxy_credentials": {
-            "value": {
-                "password": "***"
-            }
-        }, 
         ".properties.plan3_selector": {
             "value": "Plan Active"
         },
-        ".properties.uaa.ldap.ldap_referrals": {
-            "value": "follow"
-        }, 
-        ".properties.telemetry_selector": {
-            "value": "disabled"
-        }, 
         ".properties.plan2_selector.active.master_persistent_disk_type": {
             "value": "10240"
         }, 
@@ -340,12 +363,6 @@ cf_properties=$(
         }, 
         ".properties.plan3_selector.active.master_instances": {
             "value": 3
-        }, 
-        ".properties.pks-vrli.enabled.skip_cert_verify": {
-            "value": false
-        }, 
-        ".properties.syslog_migration_selector": {
-            "value": "disabled"
         }, 
         ".properties.plan3_selector.active.worker_instances": {
             "value": 1
@@ -367,12 +384,6 @@ cf_properties=$(
         }, 
         ".properties.plan1_selector.active.worker_vm_type": {
             "value": "medium"
-        }, 
-        ".properties.cloud_provider.vsphere.vcenter_ds": {
-            "value": $pks_storage_name
-        }, 
-        ".properties.wavefront": {
-            "value": "disabled"
         }, 
         ".properties.plan1_selector.active.allow_privileged_containers": {
             "value": true
